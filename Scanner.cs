@@ -115,6 +115,6 @@ class Scanner
         _addToken(type, null);
 
     private void _addToken(TokenType type, object? literal) =>
-        _tokens.Add(new Token(type, _substr, literal, _position));
+        _tokens.Add(new Token(type, _substr, literal, _start));
 
 }
