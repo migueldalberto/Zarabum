@@ -27,20 +27,13 @@ class Scanner
 
     private char _preview
     {
-        get
-        {
-            return _sourceAt(_position + 1);
-        }
+        get { return _sourceAt(_position + 1); }
     }
 
     private char _sourceAt(int i) => i < _source.Length ? _source[i] : '\0';
 
-    private string _substr
-    {
-        get
-        {
-            return _source.Substring(_start, _position - _start);
-        }
+    private string _substr {
+        get { return _source.Substring(_start, _position - _start); }
     }
 
     public List<Token> getTokens()
@@ -82,11 +75,12 @@ class Scanner
                               ++_position;
                           }
 
-                          if (_currentChar == '"') {
-                              ++_position;
-                              _addToken(TokenType.STRING, _source.Substring(_start + 1, _position - _start - 2));
-                              --_position;
-                          }
+                          if (_currentChar == '"')
+                              _addToken(
+                                      TokenType.STRING, 
+                                      _source.Substring(_start, _position + 1 - _start), 
+                                      _source.Substring(_start + 1, _position - _start - 1)
+                                      );
                       }
                       break;
                 default:
@@ -113,8 +107,8 @@ class Scanner
 
     private void _addToken(TokenType type) =>
         _addToken(type, null);
-
     private void _addToken(TokenType type, object? literal) =>
-        _tokens.Add(new Token(type, _substr, literal, _start));
-
+        _addToken(type, _substr, literal);
+    private void _addToken(TokenType type, string lexeme, object? literal) =>
+        _tokens.Add(new Token(type, lexeme, literal, _start));
 }
