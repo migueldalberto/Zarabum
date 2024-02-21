@@ -10,13 +10,14 @@ class Scanner
     private List<Token> _tokens;
     public List<Token> tokens { get { return _tokens; } }
 
-    public bool hadError;
+    private bool _hadError;
+    public bool hadError { get { return _hadError; } }
 
     public Scanner(string source)
     {
         _source = source;
         _tokens = new List<Token>();
-        hadError = false;
+        _hadError = false;
     }
 
     private char _currentChar
@@ -69,6 +70,25 @@ class Scanner
                           _addToken(TokenType.SLASH);
                       }
                       break;
+                case '"':
+                      if (_currentChar == '"') {
+                          ++_position;
+                          while (_currentChar != '"') {
+                              if (_currentChar == '\n' || _currentChar == '\0') {
+                                  _hadError = true;
+                                  Program.Error(_position, "open string reached end of line or end of file, missing \"");
+                                  break;
+                              }
+                              ++_position;
+                          }
+
+                          if (_currentChar == '"') {
+                              ++_position;
+                              _addToken(TokenType.STRING, _source.Substring(_start + 1, _position - _start - 2));
+                              --_position;
+                          }
+                      }
+                      break;
                 default:
                     if (char.IsDigit(_currentChar))
                     {
@@ -79,7 +99,7 @@ class Scanner
                         --_position;
                     } else if (char.IsLetter(_currentChar)) {
                     } else {
-                        hadError = true;
+                        _hadError = true;
                         Program.Error(_position, "invalid character '" + _currentChar + "'");
                     }
                     break;
