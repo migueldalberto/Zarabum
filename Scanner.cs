@@ -61,6 +61,14 @@ class Scanner
                 case '+': _addToken(TokenType.PLUS); break;
                 case '-': _addToken(TokenType.MINUS); break;
                 case '*': _addToken(TokenType.STAR); break;
+                case '/':
+                      if (_preview == '/') {
+                          while (_currentChar != '\0' && _currentChar != '\n') 
+                              ++_position;
+                      } else {
+                          _addToken(TokenType.SLASH);
+                      }
+                      break;
                 default:
                     if (char.IsDigit(_currentChar))
                     {
