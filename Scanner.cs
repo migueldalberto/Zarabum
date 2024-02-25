@@ -13,11 +13,30 @@ class Scanner
     private bool _hadError;
     public bool hadError { get { return _hadError; } }
 
+    private Dictionary<string, TokenType> _keywords = 
+        new Dictionary<string, TokenType>();
+
     public Scanner(string source)
     {
         _source = source;
         _tokens = new List<Token>();
         _hadError = false;
+
+        _keywords.Add("var", TokenType.VAR);
+        _keywords.Add("nao", TokenType.NAO);
+        _keywords.Add("e", TokenType.E);
+        _keywords.Add("ou", TokenType.OU);
+        _keywords.Add("xou", TokenType.XOU);
+        _keywords.Add("se", TokenType.SE);
+        _keywords.Add("senao", TokenType.SENAO);
+        _keywords.Add("escolha", TokenType.ESCOLHA);
+        _keywords.Add("caso", TokenType.CASO);
+        _keywords.Add("outrocaso", TokenType.OUTROCASO);
+        _keywords.Add("para", TokenType.PARA);
+        _keywords.Add("enquanto", TokenType.ENQUANTO);
+        _keywords.Add("func", TokenType.FUNC);
+        _keywords.Add("escreva", TokenType.ESCREVA);
+        _keywords.Add("leia", TokenType.LEIA);
     }
 
     private char _currentChar
@@ -34,6 +53,14 @@ class Scanner
 
     private string _substr {
         get { return _source.Substring(_start, _position - _start); }
+    }
+
+    private bool _match (char e) {
+        if (_preview == e) {
+            ++_position;
+            return true;
+        } else 
+            return false;
     }
 
     public List<Token> getTokens()
@@ -55,6 +82,10 @@ class Scanner
                 case '+': _addToken(TokenType.PLUS); break;
                 case '-': _addToken(TokenType.MINUS); break;
                 case '*': _addToken(TokenType.STAR); break;
+                case '=': _addToken(_match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL); break;
+                case '!': _addToken(_match('=') ? TokenType.BANG_EQUAL : TokenType.BANG); break;
+                case '>': _addToken(_match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER_EQUAL); break;
+                case '<': _addToken(_match('=') ? TokenType.LESS_EQUAL : TokenType.LESS); break;
                 case '/':
                       if (_preview == '/') {
                           while (_currentChar != '\0' && _currentChar != '\n') 
@@ -91,7 +122,16 @@ class Scanner
 
                         _addToken(TokenType.NUMBER, double.Parse(_substr));
                         --_position;
-                    } else if (char.IsLetter(_currentChar)) {
+                    } else if (char.IsLetter(_currentChar) || _currentChar.Equals('_')) {
+                        while (char.IsLetterOrDigit(_currentChar) || _currentChar.Equals('_'))
+                            ++_position;
+
+                        if (_keywords.ContainsKey(_substr))
+                            _addToken(_keywords[_substr]);
+                        else 
+                            _addToken(TokenType.IDENTIFIER, _substr);
+
+                        --_position;
                     } else {
                         _hadError = true;
                         Program.Error(_position, "invalid character '" + _currentChar + "'");
