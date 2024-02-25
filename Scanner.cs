@@ -37,6 +37,7 @@ class Scanner
         _keywords.Add("func", TokenType.FUNC);
         _keywords.Add("escreva", TokenType.ESCREVA);
         _keywords.Add("leia", TokenType.LEIA);
+        _keywords.Add("nulo", TokenType.NULO);
     }
 
     private char _currentChar

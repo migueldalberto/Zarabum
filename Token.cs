@@ -20,6 +20,7 @@ enum TokenType
     PARA, ENQUANTO,
     FUNC,
     ESCREVA, LEIA,
+    NULO,
 
     EOF
 }
