@@ -50,10 +50,11 @@ class Program
         if (scanner.hadError) return;
     }
 
-    public static void Error(int position, string msg) {
+    public static void Error(int position, string msg)
+    {
         Console.Error.WriteLine("error at l" + _CountLines(position) + ", " + msg);
     }
 
-    private static int _CountLines(int position) => 
+    private static int _CountLines(int position) =>
         string.IsNullOrEmpty(Source) ? 0 : Source.Substring(0, position).Where((c) => c == '\n').Count();
 }
