@@ -4,33 +4,33 @@ interface Expression;
 
 class Binary : Expression
 {
-    Token operatorToken;
-    Expression left;
-    Expression right;
+    public Token operatorToken;
+    public Expression leftOperand;
+    public Expression rightOperand;
 
-    Binary (Token operatorToken, Expression left, Expression right)
+    Binary(Token operatorToken, Expression leftOperand, Expression rightOperand)
     {
         this.operatorToken = operatorToken;
-        this.left = left;
-        this.right = right;
+        this.leftOperand = leftOperand;
+        this.rightOperand = rightOperand;
     }
 }
 
 class Unary : Expression
 {
-    Token operatorToken;
-    Expression right;
+    public Token operatorToken;
+    public Expression rightOperand;
 
-    Unary (Token operatorToken, Expression right)
+    Unary(Token operatorToken, Expression rightOperand)
     {
         this.operatorToken = operatorToken;
-        this.right = right;
+        this.rightOperand = rightOperand;
     }
 }
 
 class Literal : Expression
 {
-    object value;
+    public object value;
 
     Literal(object value)
     {
@@ -40,7 +40,7 @@ class Literal : Expression
 
 class Grouping : Expression
 {
-    Expression expression;
+    public Expression expression;
 
     Grouping(Expression expression)
     {
