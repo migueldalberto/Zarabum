@@ -2,7 +2,9 @@ namespace Zarabum.interpreter;
 
 enum TokenType
 {
-    LEFT_PAREN, RIGHT_PAREN,
+    LEFT_PAREN, RIGHT_PAREN, 
+    LEFT_BRACE, RIGHT_BRACE,
+    COMMA, DOT, SEMICOLON,
     PLUS, MINUS, STAR,
 
     EQUAL, EQUAL_EQUAL,
@@ -17,7 +19,9 @@ enum TokenType
     ESCOLHA, CASO, OUTROCASO,
     PARA, ENQUANTO,
     FUNC,
-    ESCREVA, LEIA
+    ESCREVA, LEIA,
+
+    EOF
 }
 
 class Token

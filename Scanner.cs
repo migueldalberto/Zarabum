@@ -79,6 +79,11 @@ class Scanner
                     break;
                 case '(': _addToken(TokenType.LEFT_PAREN); break;
                 case ')': _addToken(TokenType.RIGHT_PAREN); break;
+                case '{': _addToken(TokenType.LEFT_BRACE); break;
+                case '}': _addToken(TokenType.RIGHT_BRACE); break;
+                case ',': _addToken(TokenType.COMMA); break;
+                case '.': _addToken(TokenType.DOT); break;
+                case ';': _addToken(TokenType.SEMICOLON); break;
                 case '+': _addToken(TokenType.PLUS); break;
                 case '-': _addToken(TokenType.MINUS); break;
                 case '*': _addToken(TokenType.STAR); break;
@@ -141,6 +146,8 @@ class Scanner
 
             ++_position;
         }
+         
+        _tokens.Add(new Token(TokenType.EOF, "", null, _position));
 
         return _tokens;
     }
