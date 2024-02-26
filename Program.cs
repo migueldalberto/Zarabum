@@ -39,13 +39,13 @@ class Program
         Scanner scanner = new Scanner(s);
         scanner.getTokens();
 
-         scanner.tokens.ForEach(
-              (Token t) => Console.WriteLine(
-                  "[position " + t.position +
-                  "] " + t.type +
-                  " " + t.lexeme +
-                  " " + t.literal)
-              );
+        scanner.tokens.ForEach(
+             (Token t) => Console.WriteLine(
+                 "[position " + t.position +
+                 "] " + t.type +
+                 " " + t.lexeme +
+                 " " + t.literal)
+             );
 
         if (scanner.hadError) return;
 

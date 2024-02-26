@@ -31,7 +31,8 @@ class Parser
 
     public List<Expression> Parse()
     {
-        while (Current.type != TokenType.EOF) {
+        while (Current.type != TokenType.EOF)
+        {
             var leftOperand = _ParsePrimaryExpression();
 
             while (

@@ -13,7 +13,7 @@ class Scanner
     private bool _hadError;
     public bool hadError { get { return _hadError; } }
 
-    private Dictionary<string, TokenType> _keywords = 
+    private Dictionary<string, TokenType> _keywords =
         new Dictionary<string, TokenType>();
 
     public Scanner(string source)
@@ -52,17 +52,22 @@ class Scanner
 
     private char _sourceAt(int i) => i < _source.Length ? _source[i] : '\0';
 
-    private string _substr {
-        get { 
-            return _source.Substring(_start, _position - _start != 0 ? _position - _start : 1); 
+    private string _substr
+    {
+        get
+        {
+            return _source.Substring(_start, _position - _start != 0 ? _position - _start : 1);
         }
     }
 
-    private bool _match (char e) {
-        if (_preview == e) {
+    private bool _match(char e)
+    {
+        if (_preview == e)
+        {
             ++_position;
             return true;
-        } else 
+        }
+        else
             return false;
     }
 
@@ -95,33 +100,39 @@ class Scanner
                 case '>': _addToken(_match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER_EQUAL); break;
                 case '<': _addToken(_match('=') ? TokenType.LESS_EQUAL : TokenType.LESS); break;
                 case '/':
-                      if (_preview == '/') {
-                          while (_currentChar != '\0' && _currentChar != '\n') 
-                              ++_position;
-                      } else {
-                          _addToken(TokenType.SLASH);
-                      }
-                      break;
+                    if (_preview == '/')
+                    {
+                        while (_currentChar != '\0' && _currentChar != '\n')
+                            ++_position;
+                    }
+                    else
+                    {
+                        _addToken(TokenType.SLASH);
+                    }
+                    break;
                 case '"':
-                      if (_currentChar == '"') {
-                          ++_position;
-                          while (_currentChar != '"') {
-                              if (_currentChar == '\n' || _currentChar == '\0') {
-                                  _hadError = true;
-                                  Program.Error(_position, "open string reached end of line or end of file, missing \"");
-                                  break;
-                              }
-                              ++_position;
-                          }
+                    if (_currentChar == '"')
+                    {
+                        ++_position;
+                        while (_currentChar != '"')
+                        {
+                            if (_currentChar == '\n' || _currentChar == '\0')
+                            {
+                                _hadError = true;
+                                Program.Error(_position, "open string reached end of line or end of file, missing \"");
+                                break;
+                            }
+                            ++_position;
+                        }
 
-                          if (_currentChar == '"')
-                              _addToken(
-                                      TokenType.STRING, 
-                                      _source.Substring(_start, _position + 1 - _start), 
-                                      _source.Substring(_start + 1, _position - _start - 1)
-                                      );
-                      }
-                      break;
+                        if (_currentChar == '"')
+                            _addToken(
+                                    TokenType.STRING,
+                                    _source.Substring(_start, _position + 1 - _start),
+                                    _source.Substring(_start + 1, _position - _start - 1)
+                                    );
+                    }
+                    break;
                 default:
                     if (char.IsDigit(_currentChar))
                     {
@@ -130,17 +141,21 @@ class Scanner
 
                         _addToken(TokenType.NUMBER, double.Parse(_substr));
                         --_position;
-                    } else if (char.IsLetter(_currentChar) || _currentChar.Equals('_')) {
+                    }
+                    else if (char.IsLetter(_currentChar) || _currentChar.Equals('_'))
+                    {
                         while (char.IsLetterOrDigit(_currentChar) || _currentChar.Equals('_'))
                             ++_position;
 
                         if (_keywords.ContainsKey(_substr))
                             _addToken(_keywords[_substr]);
-                        else 
+                        else
                             _addToken(TokenType.IDENTIFIER, _substr);
 
                         --_position;
-                    } else {
+                    }
+                    else
+                    {
                         _hadError = true;
                         Program.Error(_position, "invalid character '" + _currentChar + "'");
                     }
@@ -149,7 +164,7 @@ class Scanner
 
             ++_position;
         }
-         
+
         _tokens.Add(new Token(TokenType.EOF, "", null, _position));
 
         return _tokens;
