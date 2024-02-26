@@ -8,6 +8,9 @@ class Parser
     private List<Expression> _expressions = new List<Expression>();
     public List<Expression> expressions { get { return _expressions; } }
 
+    private List<Diagnostic> _diagnostics = new List<Diagnostic>();
+    public List<Diagnostic> Diagnostics { get { return _diagnostics; } }
+
     public Token Current
     {
         get { return scanner.tokens[_currentIndex]; }
@@ -33,7 +36,17 @@ class Parser
     {
         while (Current.type != TokenType.EOF)
         {
-            var leftOperand = _ParsePrimaryExpression();
+            var expr = _ParseTerm();
+            _expressions.Add(expr);
+            ++_currentIndex;
+        }
+
+        return _expressions;
+    }
+
+    private Expression _ParseTerm()
+    {
+            var leftOperand = _ParseFactor();
 
             while (
                     Current.type == TokenType.PLUS ||
@@ -42,15 +55,30 @@ class Parser
             {
                 var operatorToken = Current;
                 ++_currentIndex;
+                var rightOperand = _ParseFactor();
+                leftOperand = new Binary(operatorToken, leftOperand, rightOperand);
+            }
+
+            return leftOperand;
+    }
+
+    private Expression _ParseFactor()
+    {
+            var leftOperand = _ParsePrimaryExpression();
+
+            while (
+                    Current.type == TokenType.STAR ||
+                    Current.type == TokenType.SLASH
+                )
+            {
+                var operatorToken = Current;
+                ++_currentIndex;
                 var rightOperand = _ParsePrimaryExpression();
                 leftOperand = new Binary(operatorToken, leftOperand, rightOperand);
             }
 
-            _expressions.Add(leftOperand);
-            ++_currentIndex;
-        }
+            return leftOperand;
 
-        return _expressions;
     }
 
     private Expression _ParsePrimaryExpression()
@@ -67,7 +95,7 @@ class Parser
             return scanner.tokens[_currentIndex - 1];
         }
 
-        Program.Error(Current.position, $"unexpected token <{Current.type}>, expected <{type}>");
+        _diagnostics.Add(new ErrorDiagnostic($"unexpected token <{Current.type}>, expected <{type}>", Current.position));
         return new Token(type, "", null, Current.position);
     }
 }

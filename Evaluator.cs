@@ -22,6 +22,14 @@ static class Evaluator
         {
             return leftOperand - rightOperand;
         }
+        else if (expr.operatorToken.type == TokenType.STAR)
+        {
+            return leftOperand * rightOperand;
+        }
+        else if (expr.operatorToken.type == TokenType.SLASH)
+        {
+            return leftOperand / rightOperand;
+        }
         else
         {
             throw new Exception($"unexpected operator <{expr.operatorToken.type}>");
