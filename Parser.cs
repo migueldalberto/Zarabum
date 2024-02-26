@@ -3,7 +3,7 @@ namespace Zarabum.interpreter;
 class Parser
 {
     Scanner scanner;
-    private int _currentIndex = 0;
+    private int _tokenListPosition = 0;
 
     private List<Expression> _expressions = new List<Expression>();
     public List<Expression> expressions { get { return _expressions; } }
@@ -13,7 +13,7 @@ class Parser
 
     public Token Current
     {
-        get { return scanner.tokens[_currentIndex]; }
+        get { return scanner.tokens[_tokenListPosition]; }
     }
 
     public Parser(string source)
@@ -36,12 +36,17 @@ class Parser
     {
         while (Current.type != TokenType.EOF)
         {
-            var expr = _ParseTerm();
+            var expr = _ParseExpression();
             _expressions.Add(expr);
-            ++_currentIndex;
+            ++_tokenListPosition;
         }
 
         return _expressions;
+    }
+
+    private Expression _ParseExpression()
+    {
+        return _ParseTerm();
     }
 
     private Expression _ParseTerm()
@@ -54,7 +59,7 @@ class Parser
                 )
             {
                 var operatorToken = Current;
-                ++_currentIndex;
+                ++_tokenListPosition;
                 var rightOperand = _ParseFactor();
                 leftOperand = new Binary(operatorToken, leftOperand, rightOperand);
             }
@@ -72,7 +77,7 @@ class Parser
                 )
             {
                 var operatorToken = Current;
-                ++_currentIndex;
+                ++_tokenListPosition;
                 var rightOperand = _ParsePrimaryExpression();
                 leftOperand = new Binary(operatorToken, leftOperand, rightOperand);
             }
@@ -83,6 +88,12 @@ class Parser
 
     private Expression _ParsePrimaryExpression()
     {
+        if (Current.type == TokenType.LEFT_PAREN) {
+            ++_tokenListPosition;
+            var expression = _ParseExpression();
+            _Match(TokenType.RIGHT_PAREN);
+            return new Grouping(expression);
+        }
         var numberToken = _Match(TokenType.NUMBER);
         return new Literal(numberToken.literal);
     }
@@ -91,8 +102,8 @@ class Parser
     {
         if (Current.type == type)
         {
-            ++_currentIndex;
-            return scanner.tokens[_currentIndex - 1];
+            ++_tokenListPosition;
+            return scanner.tokens[_tokenListPosition - 1];
         }
 
         _diagnostics.Add(new ErrorDiagnostic($"unexpected token <{Current.type}>, expected <{type}>", Current.position));
