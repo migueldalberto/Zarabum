@@ -8,7 +8,7 @@ class Binary : Expression
     public Expression leftOperand;
     public Expression rightOperand;
 
-    Binary(Token operatorToken, Expression leftOperand, Expression rightOperand)
+    public Binary(Token operatorToken, Expression leftOperand, Expression rightOperand)
     {
         this.operatorToken = operatorToken;
         this.leftOperand = leftOperand;
@@ -21,7 +21,7 @@ class Unary : Expression
     public Token operatorToken;
     public Expression rightOperand;
 
-    Unary(Token operatorToken, Expression rightOperand)
+    public Unary(Token operatorToken, Expression rightOperand)
     {
         this.operatorToken = operatorToken;
         this.rightOperand = rightOperand;
@@ -30,9 +30,9 @@ class Unary : Expression
 
 class Literal : Expression
 {
-    public object value;
+    public object? value;
 
-    Literal(object value)
+    public Literal(object? value)
     {
         this.value = value;
     }
@@ -42,7 +42,7 @@ class Grouping : Expression
 {
     public Expression expression;
 
-    Grouping(Expression expression)
+    public Grouping(Expression expression)
     {
         this.expression = expression;
     }
