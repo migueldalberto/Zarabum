@@ -27,10 +27,10 @@ enum TokenType
 
 class Token
 {
-    public TokenType type;
-    public string lexeme;
-    public object? literal;
-    public int position;
+    public readonly TokenType type;
+    public readonly string lexeme;
+    public readonly object? literal;
+    public readonly int position;
 
     public Token(TokenType type, string lexeme, object? literal, int position)
     {
