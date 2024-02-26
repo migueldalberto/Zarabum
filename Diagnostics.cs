@@ -52,10 +52,9 @@ static class DiagnosticPrinter
 
     private static void _Print(Diagnostic diagnostic, ConsoleColor color, string prefix)
     {
-        var fg = Console.ForegroundColor;
         Console.ForegroundColor = color;
         Console.Write($"[{prefix}] ");
-        Console.ForegroundColor = fg;
+        Console.ResetColor();
         if (diagnostic.Position != null)
             Console.Write("[at " + diagnostic.Position.ToString() + "] ");
         Console.Write($"- {diagnostic.Message}\n");
