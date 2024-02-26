@@ -39,18 +39,21 @@ class Program
         Scanner scanner = new Scanner(s);
         scanner.getTokens();
 
-        scanner.tokens.ForEach(
-             (Token t) => Console.WriteLine(
-                 "[position " + t.position +
-                 "] " + t.type +
-                 " " + t.lexeme +
-                 " " + t.literal)
-             );
+        // scanner.tokens.ForEach(
+             // (Token t) => Console.WriteLine(
+                 // "[position " + t.position +
+                 // "] " + t.type +
+                 // " " + t.lexeme +
+                 // " " + t.literal)
+             // );
 
-        if (scanner.hadError) return;
+        scanner.Diagnostics.ForEach((d) => d.Print());
+        if (scanner.Diagnostics.Any((d) => d is ErrorDiagnostic)) return;
 
         Parser parser = new Parser(scanner);
         parser.Parse();
+
+        parser.Diagnostics.ForEach((d) => d.Print());
 
         foreach (Expression expr in parser.expressions)
         {
@@ -58,12 +61,4 @@ class Program
             Console.WriteLine(expr.Evaluate());
         }
     }
-
-    public static void Error(int position, string msg)
-    {
-        Console.Error.WriteLine("error at line " + _CountLines(position) + ", " + msg);
-    }
-
-    private static int _CountLines(int position) =>
-        string.IsNullOrEmpty(Source) ? 0 : Source.Substring(0, position).Where((c) => c == '\n').Count();
 }

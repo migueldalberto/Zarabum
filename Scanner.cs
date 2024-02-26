@@ -10,8 +10,8 @@ class Scanner
     private List<Token> _tokens;
     public List<Token> tokens { get { return _tokens; } }
 
-    private bool _hadError;
-    public bool hadError { get { return _hadError; } }
+    private List<Diagnostic> _diagnostics = new List<Diagnostic>();
+    public List<Diagnostic> Diagnostics { get { return _diagnostics; } }
 
     private Dictionary<string, TokenType> _keywords =
         new Dictionary<string, TokenType>();
@@ -20,7 +20,6 @@ class Scanner
     {
         _source = source;
         _tokens = new List<Token>();
-        _hadError = false;
 
         _keywords.Add("var", TokenType.VAR);
         _keywords.Add("nao", TokenType.NAO);
@@ -118,8 +117,7 @@ class Scanner
                         {
                             if (_currentChar == '\n' || _currentChar == '\0')
                             {
-                                _hadError = true;
-                                Program.Error(_position, "open string reached end of line or end of file, missing \"");
+                                _diagnostics.Add(new ErrorDiagnostic("open string reached end of line or end of file, missing \"", _position));
                                 break;
                             }
                             ++_position;
@@ -156,8 +154,7 @@ class Scanner
                     }
                     else
                     {
-                        _hadError = true;
-                        Program.Error(_position, "invalid character '" + _currentChar + "'");
+                        _diagnostics.Add(new ErrorDiagnostic($"invalid character '{_currentChar}'", _position));
                     }
                     break;
             }
