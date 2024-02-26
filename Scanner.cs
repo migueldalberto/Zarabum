@@ -53,7 +53,9 @@ class Scanner
     private char _sourceAt(int i) => i < _source.Length ? _source[i] : '\0';
 
     private string _substr {
-        get { return _source.Substring(_start, _position - _start); }
+        get { 
+            return _source.Substring(_start, _position - _start != 0 ? _position - _start : 1); 
+        }
     }
 
     private bool _match (char e) {
