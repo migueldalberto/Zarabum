@@ -55,6 +55,7 @@ class Program
         foreach (Expression expr in parser.expressions)
         {
             Console.WriteLine(expr.Stringify());
+            Console.WriteLine(expr.Evaluate());
         }
     }
 
