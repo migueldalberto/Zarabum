@@ -2,8 +2,8 @@ namespace Zarabum.interpreter;
 
 class Parser
 {
-    Scanner scanner;
-    private int _tokenListPosition = 0;
+    public readonly Lexer lexer;
+    private int _tokenPosition = 0;
 
     private List<Expression> _expressions = new List<Expression>();
     public List<Expression> expressions { get { return _expressions; } }
@@ -11,24 +11,26 @@ class Parser
     private List<Diagnostic> _diagnostics = new List<Diagnostic>();
     public List<Diagnostic> Diagnostics { get { return _diagnostics; } }
 
+    public List<Token> Tokens { get { return lexer.Tokens; } }
+
     public Token Current
     {
-        get { return scanner.tokens[_tokenListPosition]; }
+        get { return Tokens[_tokenPosition]; }
     }
 
     public Parser(string source)
     {
-        scanner = new Scanner(source);
-        scanner.getTokens();
+        lexer = new Lexer(source);
+        lexer.getTokens();
     }
 
-    public Parser(Scanner scanner)
+    public Parser(Lexer lexer)
     {
-        this.scanner = scanner;
+        this.lexer = lexer;
 
-        if (scanner.tokens.Count() > 0)
+        if (Tokens.Count() > 0)
         {
-            scanner.getTokens();
+            lexer.getTokens();
         }
     }
 
@@ -38,7 +40,7 @@ class Parser
         {
             var expr = _ParseExpression();
             _expressions.Add(expr);
-            ++_tokenListPosition;
+            ++_tokenPosition;
         }
 
         return _expressions;
@@ -51,45 +53,46 @@ class Parser
 
     private Expression _ParseTerm()
     {
-            var leftOperand = _ParseFactor();
+        var leftOperand = _ParseFactor();
 
-            while (
-                    Current.type == TokenType.PLUS ||
-                    Current.type == TokenType.MINUS
-                )
-            {
-                var operatorToken = Current;
-                ++_tokenListPosition;
-                var rightOperand = _ParseFactor();
-                leftOperand = new Binary(operatorToken, leftOperand, rightOperand);
-            }
+        while (
+                Current.type == TokenType.PLUS ||
+                Current.type == TokenType.MINUS
+            )
+        {
+            var operatorToken = Current;
+            ++_tokenPosition;
+            var rightOperand = _ParseFactor();
+            leftOperand = new Binary(operatorToken, leftOperand, rightOperand);
+        }
 
-            return leftOperand;
+        return leftOperand;
     }
 
     private Expression _ParseFactor()
     {
-            var leftOperand = _ParsePrimaryExpression();
+        var leftOperand = _ParsePrimaryExpression();
 
-            while (
-                    Current.type == TokenType.STAR ||
-                    Current.type == TokenType.SLASH
-                )
-            {
-                var operatorToken = Current;
-                ++_tokenListPosition;
-                var rightOperand = _ParsePrimaryExpression();
-                leftOperand = new Binary(operatorToken, leftOperand, rightOperand);
-            }
+        while (
+                Current.type == TokenType.STAR ||
+                Current.type == TokenType.SLASH
+            )
+        {
+            var operatorToken = Current;
+            ++_tokenPosition;
+            var rightOperand = _ParsePrimaryExpression();
+            leftOperand = new Binary(operatorToken, leftOperand, rightOperand);
+        }
 
-            return leftOperand;
+        return leftOperand;
 
     }
 
     private Expression _ParsePrimaryExpression()
     {
-        if (Current.type == TokenType.LEFT_PAREN) {
-            ++_tokenListPosition;
+        if (Current.type == TokenType.LEFT_PAREN)
+        {
+            ++_tokenPosition;
             var expression = _ParseExpression();
             _Match(TokenType.RIGHT_PAREN);
             return new Grouping(expression);
@@ -102,8 +105,8 @@ class Parser
     {
         if (Current.type == type)
         {
-            ++_tokenListPosition;
-            return scanner.tokens[_tokenListPosition - 1];
+            ++_tokenPosition;
+            return Tokens[_tokenPosition - 1];
         }
 
         _diagnostics.Add(new ErrorDiagnostic($"unexpected token <{Current.type}>, expected <{type}>", Current.position));

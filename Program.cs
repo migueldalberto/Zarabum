@@ -2,8 +2,6 @@
 
 class Program
 {
-    static string? Source;
-
     static void Main(string[] args)
     {
         if (args.Length == 1)
@@ -16,41 +14,33 @@ class Program
                 System.Environment.Exit(1);
             }
 
-            Source = File.ReadAllText(filePath);
+            string source = File.ReadAllText(filePath);
 
-            _Run(Source);
+            _Run(source);
         }
         else
         {
             while (true)
             {
                 Console.Write("> ");
-                string? Source = Console.ReadLine();
+                string? source = Console.ReadLine();
 
-                if (string.IsNullOrEmpty(Source)) return;
+                if (string.IsNullOrEmpty(source)) return;
 
-                _Run(Source);
+                _Run(source);
             }
         }
     }
 
     private static void _Run(string s)
     {
-        Scanner scanner = new Scanner(s);
-        scanner.getTokens();
+        Lexer lexer = new Lexer(s);
+        lexer.getTokens();
 
-        // scanner.tokens.ForEach(
-             // (Token t) => Console.WriteLine(
-                 // "[position " + t.position +
-                 // "] " + t.type +
-                 // " " + t.lexeme +
-                 // " " + t.literal)
-             // );
+        lexer.Diagnostics.ForEach((d) => d.Print());
+        if (lexer.Diagnostics.Any((d) => d is ErrorDiagnostic)) return;
 
-        scanner.Diagnostics.ForEach((d) => d.Print());
-        if (scanner.Diagnostics.Any((d) => d is ErrorDiagnostic)) return;
-
-        Parser parser = new Parser(scanner);
+        Parser parser = new Parser(lexer);
         parser.Parse();
 
         parser.Diagnostics.ForEach((d) => d.Print());

@@ -60,5 +60,5 @@ static class DiagnosticPrinter
         Console.Write($"- {diagnostic.Message}\n");
     }
 
-    
+
 }

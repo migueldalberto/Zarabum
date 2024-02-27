@@ -1,14 +1,13 @@
 namespace Zarabum.interpreter;
 
-class Scanner
+class Lexer
 {
     private readonly string _source;
     private int _start;
     private int _position;
-    private int _line;
 
     private List<Token> _tokens;
-    public List<Token> tokens { get { return _tokens; } }
+    public List<Token> Tokens { get { return _tokens; } }
 
     private List<Diagnostic> _diagnostics = new List<Diagnostic>();
     public List<Diagnostic> Diagnostics { get { return _diagnostics; } }
@@ -16,7 +15,17 @@ class Scanner
     private Dictionary<string, TokenType> _keywords =
         new Dictionary<string, TokenType>();
 
-    public Scanner(string source)
+    private char _CurrentChar
+    {
+        get { return _SourceAt(_position); }
+    }
+
+    private char _Preview
+    {
+        get { return _SourceAt(_position + 1); }
+    }
+
+    public Lexer(string source)
     {
         _source = source;
         _tokens = new List<Token>();
@@ -39,29 +48,15 @@ class Scanner
         _keywords.Add("nulo", TokenType.NULO);
     }
 
-    private char _currentChar
-    {
-        get { return _sourceAt(_position); }
-    }
 
-    private char _preview
-    {
-        get { return _sourceAt(_position + 1); }
-    }
+    private char _SourceAt(int i) => i < _source.Length ? _source[i] : '\0';
 
-    private char _sourceAt(int i) => i < _source.Length ? _source[i] : '\0';
+    private string _GetLexemeSubstring() =>
+            _source.Substring(_start, _position - _start + 1);
 
-    private string _substr
+    private bool _Match(char e)
     {
-        get
-        {
-            return _source.Substring(_start, _position - _start != 0 ? _position - _start : 1);
-        }
-    }
-
-    private bool _match(char e)
-    {
-        if (_preview == e)
+        if (_Preview == e)
         {
             ++_position;
             return true;
@@ -72,17 +67,15 @@ class Scanner
 
     public List<Token> getTokens()
     {
-        while (_currentChar != '\0')
+        while (_CurrentChar != '\0')
         {
             _start = _position;
-            switch (_currentChar)
+            switch (_CurrentChar)
             {
                 case ' ':
                 case '\r':
                 case '\t':
-                    break;
                 case '\n':
-                    ++_line;
                     break;
                 case '(': _addToken(TokenType.LEFT_PAREN); break;
                 case ')': _addToken(TokenType.RIGHT_PAREN); break;
@@ -94,68 +87,59 @@ class Scanner
                 case '+': _addToken(TokenType.PLUS); break;
                 case '-': _addToken(TokenType.MINUS); break;
                 case '*': _addToken(TokenType.STAR); break;
-                case '=': _addToken(_match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL); break;
-                case '!': _addToken(_match('=') ? TokenType.BANG_EQUAL : TokenType.BANG); break;
-                case '>': _addToken(_match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER_EQUAL); break;
-                case '<': _addToken(_match('=') ? TokenType.LESS_EQUAL : TokenType.LESS); break;
+                case '=': _addToken(_Match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL); break;
+                case '!': _addToken(_Match('=') ? TokenType.BANG_EQUAL : TokenType.BANG); break;
+                case '>': _addToken(_Match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER_EQUAL); break;
+                case '<': _addToken(_Match('=') ? TokenType.LESS_EQUAL : TokenType.LESS); break;
                 case '/':
-                    if (_preview == '/')
-                    {
-                        while (_currentChar != '\0' && _currentChar != '\n')
+                    if (_Preview == '/')
+                        while (_CurrentChar != '\0' && _CurrentChar != '\n')
                             ++_position;
-                    }
                     else
-                    {
                         _addToken(TokenType.SLASH);
-                    }
                     break;
                 case '"':
-                    if (_currentChar == '"')
+                    ++_position;
+                    while (_CurrentChar != '"')
                     {
-                        ++_position;
-                        while (_currentChar != '"')
+                        if (_CurrentChar == '\n' || _CurrentChar == '\0')
                         {
-                            if (_currentChar == '\n' || _currentChar == '\0')
-                            {
-                                _diagnostics.Add(new ErrorDiagnostic("open string reached end of line or end of file, missing \"", _position));
-                                break;
-                            }
-                            ++_position;
+                            _diagnostics.Add(new ErrorDiagnostic("open string reached end of line or end of file, missing \"", _position));
+                            break;
                         }
-
-                        if (_currentChar == '"')
-                            _addToken(
-                                    TokenType.STRING,
-                                    _source.Substring(_start, _position + 1 - _start),
-                                    _source.Substring(_start + 1, _position - _start - 1)
-                                    );
+                        ++_position;
                     }
+
+                    if (_CurrentChar == '"')
+                        _addToken(
+                                TokenType.STRING,
+                                _source.Substring(_start + 1, _position - _start - 1)
+                                );
                     break;
                 default:
-                    if (char.IsDigit(_currentChar))
+                    if (char.IsDigit(_CurrentChar))
                     {
-                        while (char.IsDigit(_currentChar) || (_currentChar.Equals('.') && char.IsDigit(_preview)))
+                        while (
+                                char.IsDigit(_Preview) ||
+                                (_Preview.Equals('.') && char.IsDigit(_SourceAt(_position + 2)))
+                            )
                             ++_position;
 
-                        _addToken(TokenType.NUMBER, double.Parse(_substr));
-                        --_position;
+                        _addToken(TokenType.NUMBER, double.Parse(_GetLexemeSubstring()));
                     }
-                    else if (char.IsLetter(_currentChar) || _currentChar.Equals('_'))
+                    else if (char.IsLetter(_CurrentChar) || _CurrentChar.Equals('_'))
                     {
-                        while (char.IsLetterOrDigit(_currentChar) || _currentChar.Equals('_'))
+                        while (char.IsLetterOrDigit(_Preview) || _Preview.Equals('_'))
                             ++_position;
 
-                        if (_keywords.ContainsKey(_substr))
-                            _addToken(_keywords[_substr]);
+                        if (_keywords.ContainsKey(_GetLexemeSubstring()))
+                            _addToken(_keywords[_GetLexemeSubstring()]);
                         else
-                            _addToken(TokenType.IDENTIFIER, _substr);
-
-                        --_position;
+                            _addToken(TokenType.IDENTIFIER, _GetLexemeSubstring());
                     }
                     else
-                    {
-                        _diagnostics.Add(new ErrorDiagnostic($"invalid character '{_currentChar}'", _position));
-                    }
+                        _diagnostics.Add(new ErrorDiagnostic($"invalid character '{_CurrentChar}'", _position));
+
                     break;
             }
 
@@ -170,7 +154,7 @@ class Scanner
     private void _addToken(TokenType type) =>
         _addToken(type, null);
     private void _addToken(TokenType type, object? literal) =>
-        _addToken(type, _substr, literal);
+        _addToken(type, _GetLexemeSubstring(), literal);
     private void _addToken(TokenType type, string lexeme, object? literal) =>
         _tokens.Add(new Token(type, lexeme, literal, _start));
 }
