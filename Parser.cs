@@ -97,6 +97,13 @@ class Parser
             _Match(TokenType.RIGHT_PAREN);
             return new Grouping(expression);
         }
+        else if (Current.type == TokenType.MINUS)
+        {
+            var operatorToken = Current;
+            ++_tokenPosition;
+            var expression = _ParseExpression();
+            return new Unary(operatorToken, expression);
+        }
         var numberToken = _Match(TokenType.NUMBER);
         return new Literal(numberToken.literal);
     }
