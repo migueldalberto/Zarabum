@@ -1,4 +1,4 @@
-namespace Zarabum.interpreter;
+namespace Zarabum.Syntax;
 
 interface Statement;
 

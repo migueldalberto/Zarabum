@@ -1,3 +1,5 @@
+namespace Zarabum;
+
 class Diagnostic
 {
     public string Message { get; }

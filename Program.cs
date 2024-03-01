@@ -1,4 +1,8 @@
-﻿namespace Zarabum.interpreter;
+﻿using Zarabum.Lex;
+using Zarabum.Syntax;
+using Zarabum.Interpreter;
+
+namespace Zarabum;
 
 class Program
 {

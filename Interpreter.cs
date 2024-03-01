@@ -1,4 +1,7 @@
-namespace Zarabum.interpreter;
+using Zarabum.Lex;
+using Zarabum.Syntax;
+
+namespace Zarabum.Interpreter;
 
 static class Interpreter
 {

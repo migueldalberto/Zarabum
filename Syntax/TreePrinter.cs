@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Zarabum.interpreter;
+namespace Zarabum.Syntax;
 
 static class TreePrinter
 {

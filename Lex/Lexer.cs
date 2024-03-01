@@ -1,4 +1,4 @@
-namespace Zarabum.interpreter;
+namespace Zarabum.Lex;
 
 class Lexer
 {

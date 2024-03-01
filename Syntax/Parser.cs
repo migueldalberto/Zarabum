@@ -1,4 +1,6 @@
-namespace Zarabum.interpreter;
+using Zarabum.Lex;
+
+namespace Zarabum.Syntax;
 
 class Parser
 {
