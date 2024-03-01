@@ -10,7 +10,7 @@ static class Interpreter
             _environment.Define(declaration.identifier.name, declaration.expression.Evaluate());
         else if (statement is PrintStatement printStatement)
             Console.WriteLine(printStatement.expression.Evaluate());
-        else if (statement is ExpressionStatement expressionStatement) 
+        else if (statement is ExpressionStatement expressionStatement)
             expressionStatement.expression.Evaluate();
         else
             throw new Exception($"unexpected statement");
@@ -22,7 +22,7 @@ static class Interpreter
         Binary binary => EvaluateBinary(binary),
         Unary unary => EvaluateUnary(unary),
         Grouping grouping => Evaluate(grouping.expression),
-        Identifier identifier => (Double) _environment.Get(identifier.name),
+        Identifier identifier => (Double)_environment.Get(identifier.name),
         _ => throw new Exception("unexpected expression")
     };
 

@@ -7,10 +7,10 @@ class Lexer
     private int _position;
 
     private List<Token> _tokens;
-    public List<Token> Tokens { get { return _tokens; } }
+    public List<Token> Tokens => _tokens;
 
-    private List<Diagnostic> _diagnostics = new List<Diagnostic>();
-    public List<Diagnostic> Diagnostics { get { return _diagnostics; } }
+    private List<Diagnostic> _diagnostics = [];
+    public List<Diagnostic> Diagnostics => _diagnostics;
 
     private Dictionary<string, TokenType> _keywords =
         new Dictionary<string, TokenType>();

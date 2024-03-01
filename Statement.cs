@@ -29,7 +29,7 @@ class DeclarationStatement : Statement
 
     public DeclarationStatement(Identifier identifier, Expression expression)
     {
-        this.identifier = identifier; 
+        this.identifier = identifier;
         this.expression = expression;
     }
 }

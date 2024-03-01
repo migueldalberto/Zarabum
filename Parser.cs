@@ -5,15 +5,13 @@ class Parser
     public readonly Lexer lexer;
     private int _tokenPosition = 0;
 
-    // private List<Expression> _expressions = new List<Expression>();
-    // public List<Expression> expressions { get { return _expressions; } }
-    private List<Statement> _statements = new List<Statement>();
-    public List<Statement> statements { get { return _statements; } }
+    private List<Statement> _statements = [];
+    public List<Statement> statements => _statements;
 
-    private List<Diagnostic> _diagnostics = new List<Diagnostic>();
-    public List<Diagnostic> Diagnostics { get { return _diagnostics; } }
+    private List<Diagnostic> _diagnostics = [];
+    public List<Diagnostic> Diagnostics => _diagnostics;
 
-    public List<Token> Tokens { get { return lexer.Tokens; } }
+    public List<Token> Tokens => lexer.Tokens;
 
     public Token Current
     {
@@ -30,7 +28,7 @@ class Parser
     {
         this.lexer = lexer;
 
-        if (Tokens.Count() > 0)
+        if (Tokens.Count > 0)
         {
             lexer.getTokens();
         }
