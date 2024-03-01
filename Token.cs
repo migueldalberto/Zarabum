@@ -39,4 +39,9 @@ class Token
         this.literal = literal;
         this.position = position;
     }
+
+    public override string ToString()
+    {
+        return $"{type} token, lexeme '{lexeme}', literal {literal}, at {position}";
+    }
 }
