@@ -19,7 +19,7 @@ enum TokenType
     ESCOLHA, CASO, OUTROCASO,
     PARA, ENQUANTO,
     FUNC,
-    ESCREVA, LEIA,
+    ESCREVER, LER,
     NULO,
 
     EOF

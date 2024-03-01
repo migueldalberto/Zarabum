@@ -43,8 +43,8 @@ class Lexer
         _keywords.Add("para", TokenType.PARA);
         _keywords.Add("enquanto", TokenType.ENQUANTO);
         _keywords.Add("func", TokenType.FUNC);
-        _keywords.Add("escreva", TokenType.ESCREVA);
-        _keywords.Add("leia", TokenType.LEIA);
+        _keywords.Add("escrever", TokenType.ESCREVER);
+        _keywords.Add("ler", TokenType.LER);
         _keywords.Add("nulo", TokenType.NULO);
     }
 
