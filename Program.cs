@@ -27,12 +27,12 @@ class Program
 
                 if (string.IsNullOrEmpty(source)) return;
 
-                _Run(source);
+                _Run(source, true);
             }
         }
     }
 
-    private static void _Run(string s)
+    private static void _Run(string s, bool? repl = false)
     {
         Lexer lexer = new Lexer(s);
         lexer.getTokens();
@@ -45,10 +45,13 @@ class Program
 
         parser.Diagnostics.ForEach((d) => d.Print());
 
-        foreach (Expression expr in parser.expressions)
+        foreach (Statement statement in parser.statements)
         {
-            Console.WriteLine(expr.Stringify());
-            Console.WriteLine(expr.Evaluate());
+            statement.Interpret();
+            if (statement is ExpressionStatement exprStat)
+            {
+                Console.WriteLine(exprStat.expression.Evaluate());
+            }
         }
     }
 }

@@ -48,3 +48,12 @@ class Grouping : Expression
     }
 }
 
+class Identifier : Expression
+{
+    public readonly string name;
+
+    public Identifier (Token token)
+    {
+        this.name = "" + token.literal?.ToString();
+    }
+}
