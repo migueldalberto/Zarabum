@@ -95,7 +95,8 @@ class Parser
             ++_tokenPosition;
             var expression = _ParseExpression();
             _Match(TokenType.RIGHT_PAREN);
-            return new Grouping(expression);
+            // return new Grouping(expression);
+            return expression;
         }
         else if (Current.type == TokenType.MINUS)
         {
